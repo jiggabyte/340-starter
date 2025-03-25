@@ -53,13 +53,13 @@ nav ul {
 }
 
 nav ul li {
-  margin: 5px 0;
+  margin: 1px 0;
 }
 
 nav ul li a {
   color: white;
   text-decoration: none;
-  padding: 10px 15px;
+  padding: 10px 10px;
   background-color: #333;
   border-radius: 5px;
 }
@@ -203,6 +203,13 @@ footer {
   font-weight: bold;
 }
 
+.inv-display {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: space-evenly;
+  text-align: center;
+}
 @media (min-width: 768px) {
 
   body {
@@ -249,6 +256,14 @@ footer {
 
   nav ul li {
     margin: 0 10px;
+  }
+
+  .inv-display {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    justify-content: space-evenly;
+    text-align: center;
   }
 
 }
