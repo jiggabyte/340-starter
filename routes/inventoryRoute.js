@@ -1,6 +1,6 @@
 // Needed Resources 
 const express = require("express")
-const router = new express.Router() 
+const router = new express.Router()
 const invController = require("../controllers/invController")
 const utilities = require("../utilities/")
 
@@ -12,5 +12,20 @@ router.get("/detail/:invId", utilities.handleErrors(invController.buildInventory
 
 // Route to throw server error
 router.get("/error/", utilities.handleErrors(invController.throwError));
+
+// Route to build management view
+router.get("/", utilities.handleErrors(invController.buildManagementView));
+
+// Route to build add classification view
+router.get("/add-classification", utilities.handleErrors(invController.buildAddClassificationView));
+
+// Route to add new classification
+router.post("/add-classification", utilities.handleErrors(invController.addClassification));
+
+// Route to build add inventory view
+router.get("/add-inventory", utilities.handleErrors(invController.buildAddInventoryView));
+
+// Route to add new inventory
+router.post("/add-inventory", utilities.handleErrors(invController.addInventory));
 
 module.exports = router;
