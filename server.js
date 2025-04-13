@@ -13,8 +13,8 @@ const inventoryRoute = require("./routes/inventoryRoute");
 const expressLayouts = require("express-ejs-layouts");
 const baseController = require("./controllers/baseController")
 const utilities = require("./utilities/")
-//const session = require("express-session");
-//const flash = require("connect-flash");
+const session = require("express-session");
+const flash = require("connect-flash");
 
 /* ***********************
  * View Engine and Templates
@@ -23,9 +23,30 @@ app.set("view engine", "ejs");
 app.use(expressLayouts);
 app.set("layout", "./layouts/layout"); // not at views root
 
-// Configure flash middleware
-//app.use(flash());
+// Add this middleware to parse URL-encoded form data
+app.use(express.urlencoded({ extended: true }));
 
+// Add this middleware to parse JSON data
+app.use(express.json());
+
+// Configure session middleware
+app.use(
+  session({
+      secret: "yourSecretKey", // Replace with a secure secret key
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: false }, // Set to true if using HTTPS
+  })
+);
+
+// Configure flash middleware
+app.use(flash());
+
+// Make flash messages available in views
+app.use((req, res, next) => {
+  res.locals.message = req.flash("message");
+  next();
+});
 /* ***********************
 * Routes
 * ************************/

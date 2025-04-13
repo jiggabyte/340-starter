@@ -46,8 +46,7 @@ invCont.buildManagementView = async function (req, res, next) {
     res.render("./inventory/management", {
         title: "Inventory Management",
         nav,
-       // message: req.flash("message"),
-        message: "Inventory Management",
+        message: req.flash("message"),
     });
 };
 
@@ -59,8 +58,7 @@ invCont.buildAddClassificationView = async function (req, res, next) {
     res.render("./inventory/add-classification", {
         title: "Add Classification",
         nav,
-         // message: req.flash("message"),
-         message: "Inventory Management",
+        message: req.flash("message"),
     });
 };
 
@@ -69,12 +67,27 @@ invCont.buildAddClassificationView = async function (req, res, next) {
  * ************************** */
 invCont.addClassification = async function (req, res, next) {
     const { classification_name } = req.body;
-    const result = await invModel.addClassification(classification_name);
-    if (result) {
-       // req.flash("message", "Classification added successfully.");
-        res.redirect("/inv");
-    } else {
-       // req.flash("message", "Failed to add classification.");
+
+    // Server-side validation
+    const pattern = /^[a-zA-Z0-9]+$/;
+    if (!classification_name || !pattern.test(classification_name)) {
+        req.flash("message", "Invalid classification name. Please use alphanumeric characters only.");
+        return res.redirect("/inv/add-classification");
+    }
+
+    try {
+        const result = await invModel.addClassification(classification_name);
+        if (result) {
+            // Rebuild the navigation bar
+            req.flash("message", "Classification added successfully.");
+            res.redirect("/inv"); // Redirect to management view
+        } else {
+            req.flash("message", "Failed to add classification.");
+            res.redirect("/inv/add-classification");
+        }
+    } catch (error) {
+        console.error("Error adding classification:", error);
+        req.flash("message", "An error occurred. Please try again.");
         res.redirect("/inv/add-classification");
     }
 };
@@ -89,8 +102,13 @@ invCont.buildAddInventoryView = async function (req, res, next) {
         title: "Add Inventory",
         nav,
         classificationList,
-              // message: req.flash("message"),
-              message: "Inventory Management",
+        message: req.flash("message"),
+        inv_make: "", // Default empty value
+        inv_model: "",
+        inv_year: "",
+        inv_price: "",
+        inv_miles: "",
+        inv_color: "",
     });
 };
 
@@ -99,12 +117,25 @@ invCont.buildAddInventoryView = async function (req, res, next) {
  * ************************** */
 invCont.addInventory = async function (req, res, next) {
     const { classification_id, inv_make, inv_model, inv_year, inv_price, inv_miles, inv_color } = req.body;
-    const result = await invModel.addInventory({ classification_id, inv_make, inv_model, inv_year, inv_price, inv_miles, inv_color });
-    if (result) {
-      //  req.flash("message", "Inventory item added successfully.");
-        res.redirect("/inv");
-    } else {
-     //   req.flash("message", "Failed to add inventory item.");
+
+    // Server-side validation
+    if (!classification_id || !inv_make || !inv_model || !inv_year || !inv_price || !inv_miles || !inv_color) {
+        req.flash("message", "All fields are required.");
+        return res.redirect("/inv/add-inventory");
+    }
+
+    try {
+        const result = await invModel.addInventory({ classification_id, inv_make, inv_model, inv_year, inv_price, inv_miles, inv_color });
+        if (result) {
+            req.flash("message", "Inventory item added successfully.");
+            res.redirect("/inv"); // Redirect to management view
+        } else {
+            req.flash("message", "Failed to add inventory item.");
+            res.redirect("/inv/add-inventory");
+        }
+    } catch (error) {
+        console.error("Error adding inventory item:", error);
+        req.flash("message", "An error occurred. Please try again.");
         res.redirect("/inv/add-inventory");
     }
 };

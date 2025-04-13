@@ -3,8 +3,21 @@ const pool = require("../database/")
 /* ***************************
  *  Get all classification data
  * ************************** */
+/*
 async function getClassifications() {
   return await pool.query("SELECT * FROM public.classification ORDER BY classification_name")
+}
+*/
+
+async function getClassifications() {
+  try {
+      const sql = "SELECT * FROM public.classification ORDER BY classification_name";
+      const result = await pool.query(sql);
+      return result;
+  } catch (error) {
+      console.error("getClassifications error: " + error);
+      throw error;
+  }
 }
 
 
