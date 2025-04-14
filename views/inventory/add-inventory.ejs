@@ -1,10 +1,7 @@
 
-<% if (message) { %>
-    <div class="flash-message">
-        <%= message %>
-    </div>
-<% } %>
 
+
+<%- messages() %>
 <div class="form-container">
     <h1>Add New Inventory Item</h1>
     <form action="/inv/add-inventory" method="POST" class="form">
@@ -38,6 +35,10 @@
         <div class="form-group">
             <label for="inv_color">Color:</label>
             <input type="text" id="inv_color" name="inv_color" value="<%= inv_color %>" required />
+        </div>
+        <div class="form-group">
+            <label for="inv_description">Description:</label>
+            <input type="text" id="inv_description" name="inv_description" value="<%= inv_description %>" required />
         </div>
 
         <button type="submit" class="btn">Add Inventory</button>

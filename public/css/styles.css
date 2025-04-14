@@ -235,6 +235,16 @@ footer {
   color: #000000;
 }
 
+.message {
+  margin: 50px;
+  color:#007bff;
+}
+
+.error {
+  margin: 50px;
+  color:crimson;
+}
+
 @media (min-width: 768px) {
 
   body {
@@ -402,5 +412,16 @@ footer {
 .btn:hover {
   background-color: #0056b3;
 }
+
+.message {
+  margin: 50px;
+  color:#007bff;
+}
+
+.error {
+  margin: 50px;
+  color:crimson;
+}
+
 
 }

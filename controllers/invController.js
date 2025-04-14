@@ -12,7 +12,7 @@ invCont.buildByClassificationId = async function (req, res, next) {
     const data = await invModel.getInventoryByClassificationId(classification_id)
     const grid = await utilities.buildClassificationGrid(data)
     let nav = await utilities.getNav()
-    const className = data[0].classification_name
+    const className = data.length > 0 ? data[0].classification_name: "";
     res.render("./inventory/classification", {
         title: className + " vehicles",
         nav,
@@ -27,9 +27,7 @@ invCont.buildByClassificationId = async function (req, res, next) {
 invCont.buildInventoryItemById = async function (req, res, next) {
     const inv_id = req.params.invId
     const data = await invModel.getInventoryItemById(inv_id)
-
     const grid = await utilities.buildInventoryItemGrid(data)
-    console.log(data);
     let nav = await utilities.getNav()
     res.render("./inventory/item", {
         title: data[0].inv_make + ' ' + data[0].inv_model + " vehicle",
@@ -45,8 +43,7 @@ invCont.buildManagementView = async function (req, res, next) {
     let nav = await utilities.getNav();
     res.render("./inventory/management", {
         title: "Inventory Management",
-        nav,
-        message: req.flash("message"),
+        nav
     });
 };
 
@@ -57,8 +54,7 @@ invCont.buildAddClassificationView = async function (req, res, next) {
     let nav = await utilities.getNav();
     res.render("./inventory/add-classification", {
         title: "Add Classification",
-        nav,
-        message: req.flash("message"),
+        nav
     });
 };
 
@@ -82,12 +78,12 @@ invCont.addClassification = async function (req, res, next) {
             req.flash("message", "Classification added successfully.");
             res.redirect("/inv"); // Redirect to management view
         } else {
-            req.flash("message", "Failed to add classification.");
+            req.flash("error", "Failed to add classification.");
             res.redirect("/inv/add-classification");
         }
     } catch (error) {
         console.error("Error adding classification:", error);
-        req.flash("message", "An error occurred. Please try again.");
+        req.flash("error", "An error occurred. Please try again.");
         res.redirect("/inv/add-classification");
     }
 };
@@ -102,13 +98,13 @@ invCont.buildAddInventoryView = async function (req, res, next) {
         title: "Add Inventory",
         nav,
         classificationList,
-        message: req.flash("message"),
         inv_make: "", // Default empty value
         inv_model: "",
         inv_year: "",
         inv_price: "",
         inv_miles: "",
         inv_color: "",
+        inv_description: "",
     });
 };
 
@@ -116,26 +112,26 @@ invCont.buildAddInventoryView = async function (req, res, next) {
  *  Add inventory
  * ************************** */
 invCont.addInventory = async function (req, res, next) {
-    const { classification_id, inv_make, inv_model, inv_year, inv_price, inv_miles, inv_color } = req.body;
+    const { classification_id, inv_make, inv_model, inv_year, inv_price, inv_miles, inv_color, inv_description } = req.body;
 
     // Server-side validation
-    if (!classification_id || !inv_make || !inv_model || !inv_year || !inv_price || !inv_miles || !inv_color) {
-        req.flash("message", "All fields are required.");
+    if (!classification_id || !inv_make || !inv_model || !inv_year || !inv_price || !inv_miles || !inv_color || !inv_description) {
+        req.flash("error", "All fields are required.");
         return res.redirect("/inv/add-inventory");
     }
 
     try {
-        const result = await invModel.addInventory({ classification_id, inv_make, inv_model, inv_year, inv_price, inv_miles, inv_color });
+        const result = await invModel.addInventory({ classification_id, inv_make, inv_model, inv_year, inv_price, inv_miles, inv_color, inv_description });
         if (result) {
             req.flash("message", "Inventory item added successfully.");
             res.redirect("/inv"); // Redirect to management view
         } else {
-            req.flash("message", "Failed to add inventory item.");
+            req.flash("error", "Failed to add inventory item.");
             res.redirect("/inv/add-inventory");
         }
     } catch (error) {
         console.error("Error adding inventory item:", error);
-        req.flash("message", "An error occurred. Please try again.");
+        req.flash("error", "An error occurred. Please try again.");
         res.redirect("/inv/add-inventory");
     }
 };

@@ -1,10 +1,6 @@
 
-<% if (message) { %>
-  <div class="flash-message">
-      <%= message %>
-  </div>
-<% } %>
 
+<%- messages() %>
 <div class="form-container">
   <h1>Add New Classification</h1>
   <form action="/inv/add-classification" method="POST" class="form">
