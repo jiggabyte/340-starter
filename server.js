@@ -10,12 +10,15 @@ const env = require("dotenv").config();
 const app = express();
 const static = require("./routes/static");
 const inventoryRoute = require("./routes/inventoryRoute");
+const accountRoute = require("./routes/accountRoute");
 const expressLayouts = require("express-ejs-layouts");
 const baseController = require("./controllers/baseController")
 const utilities = require("./utilities/")
 const session = require("express-session");
 const flash = require("connect-flash");
 const pool = require('./database/')
+const cookieParser = require("cookie-parser"); // Add this line
+const authMiddleware = require("./middleware/authMiddleware"); // Add this line
 
 
 /* ***********************
@@ -31,6 +34,11 @@ app.use(session({
   saveUninitialized: true,
   name: 'sessionId',
 }))
+
+app.use(cookieParser()); // Add this line
+
+// Add JWT middleware
+app.use(utilities.checkJWTToken); // Add this line
 
 // Express Messages Middleware
 app.use(require('connect-flash')())
@@ -64,6 +72,14 @@ app.get("/", utilities.handleErrors(baseController.buildHome))
 // Inventory routes
 app.use("/inv", inventoryRoute);
 
+// Account routes
+app.use("/account", accountRoute);
+
+// Protected route example
+app.get("/protected", authMiddleware, (req, res) => {
+  res.send(`Welcome, ${req.user.email}`);
+});
+
 // File Not Found Route - must be last route in list
 app.use(async (req, res, next) => {
   next({ status: 404, message: 'Sorry, we appear to have lost that page.' })
@@ -76,15 +92,15 @@ app.use(async (req, res, next) => {
 * Place after all other middleware
 *************************/
 app.use(async (err, req, res, next) => {
-  let nav = await utilities.getNav()
-  console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  if(err.status == 404){ message = err.message} else {message = 'Oh no! There was a crash. Maybe try a different route?'}
+  let nav = await utilities.getNav();
+  console.error(`Error at: "${req.originalUrl}": ${err.message}`);
+  const message = err.status === 404 ? err.message : 'Oh no! There was a crash. Maybe try a different route?';
   res.render("errors/error", {
     title: err.status || 'Server Error',
-    message,
-    nav
-  })
-})
+    message, // Pass the message variable here
+    nav,
+  });
+});
 
 /* ***********************
  * Local Server Information

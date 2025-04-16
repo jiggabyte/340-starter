@@ -245,6 +245,25 @@ footer {
   color:crimson;
 }
 
+/* Inventory Table */
+#inventoryDisplay {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#inventoryDisplay th,
+#inventoryDisplay td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#inventoryDisplay th {
+    background-color: #007bff;
+    color: white;
+}
+
 @media (min-width: 768px) {
 
   body {
