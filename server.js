@@ -76,7 +76,7 @@ app.use("/inv", inventoryRoute);
 app.use("/account", accountRoute);
 
 // Protected route example
-app.get("/protected", authMiddleware, (req, res) => {
+app.get("/protected", authMiddleware.checkAdminOrEmployee, (req, res) => {
   res.send(`Welcome, ${req.user.email}`);
 });
 

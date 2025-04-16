@@ -1,19 +1,22 @@
 const jwtUtility = require("../utilities/jwt");
 
-const authMiddleware = (req, res, next) => {
-  const token = req.cookies.jwt;
-  if (!token) {
-    return res.redirect("/login"); // Redirect to login if no token
-  }
+const authMiddleware = {
+  checkAdminOrEmployee: (req, res, next) => {
+    const token = req.cookies.jwt;
+    if (!token) {
+      req.flash("notice", "Please log in.");
+      return res.redirect("/account/login");
+    }
 
-  const decoded = jwtUtility.verifyToken(token);
-  if (!decoded) {
-    res.clearCookie("jwt"); // Clear invalid token
-    return res.redirect("/login");
-  }
+    const decoded = jwtUtility.verifyToken(token);
+    if (!decoded || (decoded.account_type !== "Employee" && decoded.account_type !== "Admin")) {
+      req.flash("notice", "You do not have permission to access this area.");
+      return res.redirect("/account/login");
+    }
 
-  req.user = decoded; // Attach user info to request
-  next();
+    req.user = decoded;
+    next();
+  },
 };
 
 module.exports = authMiddleware;

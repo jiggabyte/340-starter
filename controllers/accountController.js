@@ -49,5 +49,65 @@ async function accountLogin(req, res) {
   }
 }
 
+/* ****************************************
+ *  Build management view
+ * ************************************ */
+async function buildManagement(req, res) {
+  const nav = await utilities.getNav();
+  const accountData = res.locals.accountData;
 
-module.exports = { accountLogin };
+  res.render("account/management", {
+    title: "Account Management",
+    nav,
+    accountData,
+  });
+}
+
+/* ****************************************
+ *  Build update view
+ * ************************************ */
+async function buildUpdateView(req, res) {
+  const nav = await utilities.getNav();
+  const accountData = await accountModel.getAccountById(req.params.account_id);
+
+  res.render("account/update", {
+    title: "Update Account",
+    nav,
+    accountData,
+  });
+}
+
+/* ****************************************
+ *  Update account details
+ * ************************************ */
+async function updateAccount(req, res) {
+  const { account_id, account_firstname, account_lastname, account_email } = req.body;
+  const result = await accountModel.updateAccount(account_id, account_firstname, account_lastname, account_email);
+
+  if (result) {
+    req.flash("message", "Account updated successfully.");
+    res.redirect("/account");
+  } else {
+    req.flash("error", "Failed to update account.");
+    res.redirect(`/account/update/${account_id}`);
+  }
+}
+
+/* ****************************************
+ *  Update account password
+ * ************************************ */
+async function updatePassword(req, res) {
+  const { account_id, account_password } = req.body;
+  const hashedPassword = await bcrypt.hash(account_password, 10);
+  const result = await accountModel.updatePassword(account_id, hashedPassword);
+
+  if (result) {
+    req.flash("message", "Password updated successfully.");
+    res.redirect("/account");
+  } else {
+    req.flash("error", "Failed to update password.");
+    res.redirect(`/account/update/${account_id}`);
+  }
+}
+
+module.exports = { accountLogin, buildManagement, buildUpdateView, updateAccount, updatePassword };
