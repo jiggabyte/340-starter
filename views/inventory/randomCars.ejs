@@ -1,0 +1,20 @@
+<main>
+    <h1>Random Cars</h1>
+    <div class="car-list">
+        <% if (randomCars.length> 0) { %>
+            <% randomCars.forEach(car=> { %>
+                <div class="car-item">
+                    <h2>
+                        <%= car.inv_make %>
+                    </h2>
+                    <p>Price: $<%= car.inv_price %>
+                    </p>
+                    <p>Year: <%= car.inv_year %>
+                    </p>
+                </div>
+                <% }) %>
+                    <% } else { %>
+                        <p>No cars available at the moment.</p>
+                        <% } %>
+    </div>
+</main>

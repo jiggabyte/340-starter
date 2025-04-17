@@ -1,9 +1,10 @@
 // Needed Resources 
-const express = require("express")
-const router = new express.Router()
-const invController = require("../controllers/invController")
-const utilities = require("../utilities/")
-const authMiddleware = require("../middleware/authMiddleware")
+const express = require("express");
+const router = express.Router();
+const invController = require("../controllers/invController");
+const inventoryController = require("../controllers/inventoryController");
+const utilities = require("../utilities/");
+const authMiddleware = require("../middleware/authMiddleware");
 
 // Route to build inventory by classification view
 router.get("/type/:classificationId", utilities.handleErrors(invController.buildByClassificationId));
@@ -23,5 +24,8 @@ router.post("/add-inventory", authMiddleware.checkAdminOrEmployee, utilities.han
 
 // Route to get inventory by classification as JSON
 router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON));
+
+// Route to display random cars
+router.get("/random", inventoryController.displayRandomCars);
 
 module.exports = router;
