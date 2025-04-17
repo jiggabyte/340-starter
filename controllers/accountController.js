@@ -110,4 +110,43 @@ async function updatePassword(req, res) {
   }
 }
 
-module.exports = { accountLogin, buildManagement, buildUpdateView, updateAccount, updatePassword };
+/* ****************************************
+ *  Register new account
+ * ************************************ */
+async function accountRegister(req, res) {
+  const { account_firstname, account_lastname, account_email, account_password } = req.body;
+
+  try {
+    // Check if the email already exists
+    const existingAccount = await accountModel.getAccountByEmail(account_email);
+    if (existingAccount) {
+      req.flash("error", "Email is already registered.");
+      return res.redirect("/account/register");
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(account_password, 10);
+
+    // Save the new account to the database
+    const result = await accountModel.createAccount({
+      account_firstname,
+      account_lastname,
+      account_email,
+      account_password: hashedPassword,
+    });
+
+    if (result) {
+      req.flash("success", "Registration successful! Please log in.");
+      res.redirect("/account/login");
+    } else {
+      req.flash("error", "Registration failed. Please try again.");
+      res.redirect("/account/register");
+    }
+  } catch (error) {
+    console.error("Error during registration:", error);
+    req.flash("error", "An unexpected error occurred. Please try again.");
+    res.redirect("/account/register");
+  }
+}
+
+module.exports = { accountLogin, buildManagement, buildUpdateView, updateAccount, updatePassword, accountRegister };

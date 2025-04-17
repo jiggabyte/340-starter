@@ -8,12 +8,36 @@ const authMiddleware = require("../middleware/authMiddleware"); // Import authMi
 // Protect the account management route
 router.get("/", utilities.checkLogin, utilities.handleErrors(accountController.buildManagement));
 
+// Render login view
+router.get("/login", (req, res) => {
+  res.render("account/login", {
+    title: "Login",
+    nav: res.locals.nav,
+  });
+});
+
 // Process the login request
 router.post(
   "/login",
-  regValidate.loginRules(),
-  regValidate.checkLoginData,
-  utilities.handleErrors(accountController.accountLogin)
+  regValidate.loginRules(), // Validation rules for login
+  regValidate.checkLoginData, // Middleware to validate login data
+  utilities.handleErrors(accountController.accountLogin) // Controller to handle login
+);
+
+// Render registration view
+router.get("/register", (req, res) => {
+  res.render("account/register", {
+    title: "Register",
+    nav: res.locals.nav,
+  });
+});
+
+// Process the registration request
+router.post(
+  "/register",
+  regValidate.registrationRules(), // Validation rules for registration
+  regValidate.checkRegistrationData, // Middleware to validate registration data
+  utilities.handleErrors(accountController.accountRegister) // Controller to handle registration
 );
 
 // Update account routes
